@@ -5,16 +5,16 @@ import (
 	"errors"
 )
 
-type CustomerService struct {
+type CustomerCreator struct {
 	customerRepository customers.CustomerRepository
 	cityRepository     customers.CityRepository
 }
 
-func NewCustomerService(customerRepository customers.CustomerRepository, cityRepository customers.CityRepository) CustomerService {
-	return CustomerService{customerRepository: customerRepository, cityRepository: cityRepository}
+func NewCustomerCreator(customerRepository customers.CustomerRepository, cityRepository customers.CityRepository) CustomerCreator {
+	return CustomerCreator{customerRepository: customerRepository, cityRepository: cityRepository}
 }
 
-func (cs CustomerService) CreateCustomer(dni, firstName, lastName, phone, email, cityID string) error {
+func (cs CustomerCreator) CreateCustomer(dni, firstName, lastName, phone, email, cityID string) error {
 
 	dniVo, err := customers.NewCustomerDNI(dni)
 	if err != nil {

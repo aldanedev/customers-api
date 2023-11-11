@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"compartamos/customers/internal/creating"
+	"compartamos/customers/internal/list"
 	"compartamos/customers/internal/plataform/server"
 	"compartamos/customers/internal/plataform/storage/postgres"
 	"context"
@@ -18,9 +19,10 @@ func Run() error {
 
 	customers := postgres.NewCustomerRepository(db)
 	cities := postgres.NewCityRepository(db)
-	creatingService := creating.NewCustomerService(customers, cities)
+	customerCreator := creating.NewCustomerCreator(customers, cities)
+	customerLister := list.NewCustomerLister(customers)
 
-	server := server.New("0.0.0.0", 3000, creatingService)
+	server := server.New("0.0.0.0", 3000, customerCreator, customerLister)
 
 	return server.Run()
 }

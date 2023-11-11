@@ -163,4 +163,5 @@ func NewCustomer(dni string, firstName string, lastName string, phone string, em
 type CustomerRepository interface {
 	Save(*Customer) error
 	Exists(*CustomerDNI) (bool, error)
+	FindAll() ([]*Customer, error)
 }

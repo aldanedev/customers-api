@@ -15,7 +15,7 @@ type createRequest struct {
 	CityID    string `json:"city_id"`
 }
 
-func CreateHandler(creatingService creating.CustomerService) fiber.Handler {
+func CreateHandler(customerCreator creating.CustomerCreator) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 
 		var request createRequest
@@ -25,7 +25,7 @@ func CreateHandler(creatingService creating.CustomerService) fiber.Handler {
 			})
 		}
 
-		err := creatingService.CreateCustomer(
+		err := customerCreator.CreateCustomer(
 			request.DNI,
 			request.FirstName,
 			request.LastName,
