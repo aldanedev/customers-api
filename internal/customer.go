@@ -160,8 +160,35 @@ func NewCustomer(dni string, firstName string, lastName string, phone string, em
 	}, nil
 }
 
+func (c *Customer) UpdateCustomer(firstName, lastName, phone, email string, city *City) error {
+	customerFirstNameVo, err := NewCustomerFirstName(firstName)
+	if err != nil {
+		return err
+	}
+	customerLastNameVo, err := NewCustomerLastName(lastName)
+	if err != nil {
+		return err
+	}
+	customerEmailVo, err := NewCustomerEmail(email)
+	if err != nil {
+		return err
+	}
+	customerPhoneVo, err := NewCustomerPhone(phone)
+	if err != nil {
+		return err
+	}
+	c.firstName = customerFirstNameVo
+	c.lastName = customerLastNameVo
+	c.email = customerEmailVo
+	c.phone = customerPhoneVo
+	c.city = city
+
+	return nil
+}
+
 type CustomerRepository interface {
 	Save(*Customer) error
 	Exists(*CustomerDNI) (bool, error)
 	FindAll() ([]*Customer, error)
+	FindByDNI(*CustomerDNI) (*Customer, error)
 }

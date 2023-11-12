@@ -4,6 +4,7 @@ import (
 	"compartamos/customers/internal/creating"
 	"compartamos/customers/internal/list"
 	"compartamos/customers/internal/plataform/server/handler"
+	"compartamos/customers/internal/updating"
 
 	"fmt"
 	"log"
@@ -17,14 +18,16 @@ type Server struct {
 	engine          *fiber.App
 	customerCreator creating.CustomerCreator
 	customerLister  list.CustomerLister
+	customerUpdater updating.CustomerUpdater
 }
 
-func New(host string, port uint, customerCreator creating.CustomerCreator, customerLister list.CustomerLister) Server {
+func New(host string, port uint, customerCreator creating.CustomerCreator, customerLister list.CustomerLister, customerUpdater updating.CustomerUpdater) Server {
 	srv := Server{
 		httpAddr:        fmt.Sprintf("%s:%d", host, port),
 		engine:          fiber.New(),
 		customerCreator: customerCreator,
 		customerLister:  customerLister,
+		customerUpdater: customerUpdater,
 	}
 
 	srv.RegisterRoutes()
@@ -43,4 +46,5 @@ func (s *Server) Run() error {
 func (s *Server) RegisterRoutes() {
 	s.engine.Post("/customers", handler.CreateHandler(s.customerCreator))
 	s.engine.Get("/customers", handler.ListHandler(s.customerLister))
+	s.engine.Put("/customers/:dni", handler.UpdateHandler(s.customerUpdater))
 }

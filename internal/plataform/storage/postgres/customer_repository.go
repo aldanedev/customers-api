@@ -3,6 +3,7 @@ package postgres
 import (
 	customers "compartamos/customers/internal"
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,12 +17,15 @@ var sqlSelectCustomers = `
 
 var sqlInsertCustomer = `
   INSERT INTO customers (dni, first_name, last_name, phone, email, city_id)
-  VALUES ($1, $2, $3, $4, $5, $6)
+  VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (dni)
+  DO UPDATE SET first_name = $2, last_name = $3, phone = $4, email = $5, city_id = $6
 `
 
 var sqlExistsCustomer = `
   SELECT EXISTS(SELECT 1 FROM customers WHERE dni = $1)
 `
+
+var sqlSelectCutomerByDNI = sqlSelectCustomers + " WHERE c.dni = $1"
 
 type CustomerRepository struct {
 	db *pgxpool.Pool
@@ -74,6 +78,20 @@ func (r *CustomerRepository) FindAll() ([]*customers.Customer, error) {
 		customersList = append(customersList, customer)
 	}
 	return customersList, nil
+}
+
+func (r *CustomerRepository) FindByDNI(dni *customers.CustomerDNI) (*customers.Customer, error) {
+	rows, err := r.db.Query(context.Background(), sqlSelectCutomerByDNI, dni.String())
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return nil, errors.New("customer not found")
+	}
+
+	return r.scanRow(rows)
 }
 
 func (r *CustomerRepository) scanRow(rows pgx.Rows) (*customers.Customer, error) {
