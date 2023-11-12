@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"compartamos/customers/internal/creating"
 	"compartamos/customers/internal/deleting"
+	"compartamos/customers/internal/find"
 	"compartamos/customers/internal/list"
 	"compartamos/customers/internal/plataform/server"
 	"compartamos/customers/internal/plataform/storage/postgres"
@@ -31,8 +32,9 @@ func Run() error {
 	customerUpdater := updating.NewCustomerUpdater(customers, cities)
 	cityLister := list.NewCityLister(cities)
 	customerDeleter := deleting.NewCustomerDeleter(customers)
+	customerFinder := find.NewCustomerFinder(customers)
 
-	server := server.New("0.0.0.0", 3000, customerCreator, customerLister, customerUpdater, cityLister, customerDeleter)
+	server := server.New("0.0.0.0", 3000, customerCreator, customerLister, customerUpdater, cityLister, customerDeleter, customerFinder)
 
 	return server.Run()
 }

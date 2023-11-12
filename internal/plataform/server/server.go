@@ -3,6 +3,7 @@ package server
 import (
 	"compartamos/customers/internal/creating"
 	"compartamos/customers/internal/deleting"
+	"compartamos/customers/internal/find"
 	"compartamos/customers/internal/list"
 	"compartamos/customers/internal/plataform/server/handler"
 	"compartamos/customers/internal/updating"
@@ -22,6 +23,7 @@ type Server struct {
 	customerUpdater updating.CustomerUpdater
 	cityLister      list.CityLister
 	customerDeleter deleting.CustomerDeleter
+	customerFinder  find.CustomerFinder
 }
 
 func New(
@@ -31,7 +33,8 @@ func New(
 	customerLister list.CustomerLister,
 	customerUpdater updating.CustomerUpdater,
 	cityLister list.CityLister,
-	deleteCustomer deleting.CustomerDeleter,
+	customerDeleter deleting.CustomerDeleter,
+	customerFinder find.CustomerFinder,
 ) Server {
 
 	srv := Server{
@@ -41,7 +44,8 @@ func New(
 		customerLister:  customerLister,
 		customerUpdater: customerUpdater,
 		cityLister:      cityLister,
-		customerDeleter: deleteCustomer,
+		customerDeleter: customerDeleter,
+		customerFinder:  customerFinder,
 	}
 
 	srv.RegisterRoutes()
@@ -63,4 +67,5 @@ func (s *Server) RegisterRoutes() {
 	s.engine.Put("/customers/:dni", handler.UpdateHandler(s.customerUpdater))
 	s.engine.Get("/cities", handler.ListCitiesHandler(s.cityLister))
 	s.engine.Delete("/customers/:id", handler.DeleteHandler(s.customerDeleter))
+	s.engine.Get("/customers/:dni", handler.FindHandler(s.customerFinder))
 }
