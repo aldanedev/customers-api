@@ -23,8 +23,9 @@ func Run() error {
 	customerCreator := creating.NewCustomerCreator(customers, cities)
 	customerLister := list.NewCustomerLister(customers)
 	customerUpdater := updating.NewCustomerUpdater(customers, cities)
+	cityLister := list.NewCityLister(cities)
 
-	server := server.New("0.0.0.0", 3000, customerCreator, customerLister, customerUpdater)
+	server := server.New("0.0.0.0", 3000, customerCreator, customerLister, customerUpdater, cityLister)
 
 	return server.Run()
 }

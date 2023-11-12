@@ -13,3 +13,15 @@ func NewCustomerLister(customerRepository customers.CustomerRepository) Customer
 func (cl CustomerLister) ListCustomers() ([]*customers.Customer, error) {
 	return cl.customerRepository.FindAll()
 }
+
+type CityLister struct {
+	cityRepository customers.CityRepository
+}
+
+func NewCityLister(cityRepository customers.CityRepository) CityLister {
+	return CityLister{cityRepository: cityRepository}
+}
+
+func (cl CityLister) ListCities() ([]*customers.City, error) {
+	return cl.cityRepository.FindAll()
+}

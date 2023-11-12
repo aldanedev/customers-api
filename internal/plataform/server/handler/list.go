@@ -49,3 +49,30 @@ func ListHandler(customerLister list.CustomerLister) fiber.Handler {
 		return c.JSON(response)
 	}
 }
+
+type citiesResponse struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+func ListCitiesHandler(cityLister list.CityLister) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		cities, err := cityLister.ListCities()
+
+		if err != nil {
+			return c.JSON(fiber.Map{
+				"message": err.Error(),
+			})
+		}
+
+		var response []citiesResponse
+		for _, city := range cities {
+			response = append(response, citiesResponse{
+				ID:   city.ID().String(),
+				Name: city.Name().String(),
+			})
+		}
+
+		return c.JSON(response)
+	}
+}
