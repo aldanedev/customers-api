@@ -2,6 +2,7 @@ package server
 
 import (
 	"compartamos/customers/internal/creating"
+	"compartamos/customers/internal/deleting"
 	"compartamos/customers/internal/list"
 	"compartamos/customers/internal/plataform/server/handler"
 	"compartamos/customers/internal/updating"
@@ -20,9 +21,19 @@ type Server struct {
 	customerLister  list.CustomerLister
 	customerUpdater updating.CustomerUpdater
 	cityLister      list.CityLister
+	customerDeleter deleting.CustomerDeleter
 }
 
-func New(host string, port uint, customerCreator creating.CustomerCreator, customerLister list.CustomerLister, customerUpdater updating.CustomerUpdater, cityLister list.CityLister) Server {
+func New(
+	host string,
+	port uint,
+	customerCreator creating.CustomerCreator,
+	customerLister list.CustomerLister,
+	customerUpdater updating.CustomerUpdater,
+	cityLister list.CityLister,
+	deleteCustomer deleting.CustomerDeleter,
+) Server {
+
 	srv := Server{
 		httpAddr:        fmt.Sprintf("%s:%d", host, port),
 		engine:          fiber.New(),
@@ -30,6 +41,7 @@ func New(host string, port uint, customerCreator creating.CustomerCreator, custo
 		customerLister:  customerLister,
 		customerUpdater: customerUpdater,
 		cityLister:      cityLister,
+		customerDeleter: deleteCustomer,
 	}
 
 	srv.RegisterRoutes()
@@ -50,4 +62,5 @@ func (s *Server) RegisterRoutes() {
 	s.engine.Get("/customers", handler.ListHandler(s.customerLister))
 	s.engine.Put("/customers/:dni", handler.UpdateHandler(s.customerUpdater))
 	s.engine.Get("/cities", handler.ListCitiesHandler(s.cityLister))
+	s.engine.Delete("/customers/:id", handler.DeleteHandler(s.customerDeleter))
 }

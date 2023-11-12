@@ -25,10 +25,20 @@ var sqlExistsCustomer = `
   SELECT EXISTS(SELECT 1 FROM customers WHERE dni = $1)
 `
 
+var sqlDeleteCustomer = `
+  DELETE FROM customers WHERE dni = $1
+`
+
 var sqlSelectCutomerByDNI = sqlSelectCustomers + " WHERE c.dni = $1"
 
 type CustomerRepository struct {
 	db *pgxpool.Pool
+}
+
+func (r *CustomerRepository) Delete(dni *customers.CustomerDNI) error {
+	_, err := r.db.Exec(context.Background(), sqlDeleteCustomer, dni.String())
+
+	return err
 }
 
 func NewCustomerRepository(db *pgxpool.Pool) customers.CustomerRepository {

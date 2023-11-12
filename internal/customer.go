@@ -191,4 +191,5 @@ type CustomerRepository interface {
 	Exists(*CustomerDNI) (bool, error)
 	FindAll() ([]*Customer, error)
 	FindByDNI(*CustomerDNI) (*Customer, error)
+	Delete(*CustomerDNI) error
 }
